@@ -207,8 +207,8 @@ class Tor2web(object):
         obj.headers.setRawHeaders(b'connection', [b'keep-alive'])
         obj.headers.setRawHeaders(b'accept-encoding', [b'gzip, chunked'])
        # obj.headers.setRawHeaders(b'x-tor2web', [b'encrypted'])
-        obj.headers.setRawHeaders(b'user-agent', [b'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0'])
-
+        obj.headers.setRawHeaders(b'user-agent', [config.user_agent])
+        
         for key, values in obj.headers.getAllRawHeaders():
             fixed_values = []
             for value in values:
@@ -301,7 +301,7 @@ class Tor2web(object):
         """
         log.msg("processing HTML type content")
         
-        data = re_sub(rexp['t2w'], r'https://\1.' + config.basehost, data)
+        data = re_sub(rexp['t2w'], r'https://\2.' + config.basehost, data)
 
         data = re.sub(rexp['body'], partial(self.add_banner, obj, banner), data)
 
@@ -923,7 +923,7 @@ class T2WRequest(proxy.ProxyRequest):
 
         fixed_values = []
         for value in values:
-            value = re_sub(rexp['t2w'], r'https://\1.' + config.basehost, value)
+            value = re_sub(rexp['t2w'], r'https://\2.' + config.basehost, value)
             fixed_values.append(value)
 
         self.responseHeaders.setRawHeaders(key, fixed_values)
@@ -1118,7 +1118,7 @@ t2w = Tor2web(config)
 rexp = {
     'body': re.compile(r'(<body.*?\s*>)', re.I),
     'w2t': re.compile(r'https://([a-z0-9]{16}).' + config.basehost + '(:443)?', re.I),
-    't2w': re.compile(r'https://([a-z0-9]{16}).onion(:80)?', re.I)
+    't2w': re.compile(r'(https|http)://([a-z0-9]{16}).onion(:80|:443)?', re.I)
 }
 
 application = service.Application("Tor2web")
@@ -1164,3 +1164,4 @@ for ip in [ipv4, ipv6]:
 
     service_http = startTor2webHTTP(t2w, factory, ip)
     service_http.setServiceParent(application)
+
