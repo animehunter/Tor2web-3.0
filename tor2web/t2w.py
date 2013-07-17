@@ -209,6 +209,14 @@ class Tor2web(object):
        # obj.headers.setRawHeaders(b'x-tor2web', [b'encrypted'])
         obj.headers.setRawHeaders(b'user-agent', [config.user_agent])
         
+        #remove all x- headers
+        all_x_keys = []
+        for key, values in obj.headers.getAllRawHeaders():
+            if key.startswith(b'x-') or key.startswith(b'X-'): all_x_keys.append(key)
+
+        for k in all_x_keys:
+            obj.headers.removeHeader(k)
+
         for key, values in obj.headers.getAllRawHeaders():
             fixed_values = []
             for value in values:

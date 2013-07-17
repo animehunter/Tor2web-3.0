@@ -12,4 +12,4 @@ Additional Hacks by Animehunter
   * User-agent spoofing via config file
   * Removed x-tor2web from the http header
   * Removed "redirect to https" to make reverse proxy possible (user (https) -> proxypass -> tor2web (http))
-
+  * Removed all x- headers to improve privacy
