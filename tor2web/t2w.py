@@ -40,7 +40,7 @@ import hashlib
 from StringIO import StringIO
 from random import choice
 from functools import partial
-from urlparse import urlparse
+from urlparse import urlparse, urlunparse
 
 from zope.interface import implements
 
@@ -861,7 +861,7 @@ class T2WRequest(proxy.ProxyRequest):
                 producer = None
 
             agent  = Agent(reactor, sockhost=config.sockshost, sockport=config.socksport, pool=self.pool)
-            self.proxy_d = agent.request(self.method, 'shttp://'+uri.host+uri.path,
+            self.proxy_d = agent.request(self.method, urlunparse(('shttp', uri.netloc, uri.path,  uri.params, uri.query, uri.fragment)),
                     self.obj.headers, bodyProducer=producer)
 
             self.proxy_d.addCallback(self.cbResponse)
